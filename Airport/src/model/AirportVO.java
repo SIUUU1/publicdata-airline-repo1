@@ -1,7 +1,10 @@
 package model;
+
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 public class AirportVO {
+	private int airports_id;	//항공권ID
 	private String vihicle_id; // 항공편명
 	private String airline_name; // 항공사명
 	private String depAirport_name; // 출발공항
@@ -26,6 +29,29 @@ public class AirportVO {
 		this.arr_plandtime = arr_plandtime;
 		this.economy_charge = economy_charge;
 		this.prestige_charge = prestige_charge;
+	}
+
+	public AirportVO(int airports_id, String vihicle_id, String airline_name, String depAirport_name,
+			String arrAirport_name, String dep_plandtime, String arr_plandtime, int economy_charge, int prestige_charge,
+			SimpleDateFormat sdf) {
+		super();
+		this.airports_id = airports_id;
+		this.vihicle_id = vihicle_id;
+		this.airline_name = airline_name;
+		this.depAirport_name = depAirport_name;
+		this.arrAirport_name = arrAirport_name;
+		this.dep_plandtime = dep_plandtime;
+		this.arr_plandtime = arr_plandtime;
+		this.economy_charge = economy_charge;
+		this.prestige_charge = prestige_charge;
+	}
+
+	public int getAirports_id() {
+		return airports_id;
+	}
+
+	public void setAirports_id(int airports_id) {
+		this.airports_id = airports_id;
 	}
 
 	public String getVihicle_id() {
@@ -94,7 +120,7 @@ public class AirportVO {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(vihicle_id);
+		return Objects.hash(airports_id);
 	}
 
 	@Override
@@ -106,16 +132,14 @@ public class AirportVO {
 		if (getClass() != obj.getClass())
 			return false;
 		AirportVO other = (AirportVO) obj;
-		return Objects.equals(vihicle_id, other.vihicle_id);
+		return airports_id == other.airports_id;
 	}
 
 	@Override
 	public String toString() {
-		return "AirportData [항공편명=" + vihicle_id + ", 항공사명=" + airline_name + ", 출발공항="
-				+ depAirport_name + ", 도착공항=" + arrAirport_name + ", 출발시간=" + dep_plandtime
-				+ ", 도착시간=" + arr_plandtime + ", 일반석운임=" + economy_charge + ", 비즈니스석운임="
-				+ prestige_charge + "]";
+		return " " + airports_id + " | " + vihicle_id + " | " + airline_name + " | " + depAirport_name + " | "
+				+ arrAirport_name + " | " + dep_plandtime + " | " + arr_plandtime + " | " + economy_charge + " | "
+				+ prestige_charge + "";
 	}
-
 
 }
