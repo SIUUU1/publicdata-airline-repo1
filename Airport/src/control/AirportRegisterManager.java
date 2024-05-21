@@ -1,6 +1,8 @@
 package control;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,12 +42,25 @@ public class AirportRegisterManager {
 	public static List<AirportVO> selectAirport(String depAirportId, String arrAirportId, String depPlandTime,
 			String airlineId) {
 		List<AirportVO> list = new ArrayList<>();
+		//properties 가져오기
+		String filePath = "/Users/ansiu/publicdata-airline-repo1/Airport/src/db.properties";
+		String serviceKey = null;
+		try {
+			Properties properties = new Properties();
+			properties.load(new FileReader(filePath));
+			serviceKey = properties.getProperty("serviceKey");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		// 1.요청 url 생성
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"); /* URL */
 		try {
 			urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8")
-					+ "=ZZK6F84oQsGUcoz%2BiNgdSgTrLL5bKPHr2ppbYMYXSKVSRBzjVqPzEyWEzKoOqVLUdNpry0wyNejJ1AnztcO2HQ%3D%3D");
+					+ serviceKey);
 			urlBuilder.append(
 					"&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /* 페이지번호 */
 			urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "="

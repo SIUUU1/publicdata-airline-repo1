@@ -51,7 +51,7 @@ public class AirportMain {
 
 	// 예매하기
 	public static void reservation() {
-		boolean flag = false;
+		boolean findFlag = false;
 		int selectDepAirport = 0;// 출발공항
 		int selectArrAirport = 0;// 도착공항
 		String depPlandTime = null; // 출발일
@@ -212,13 +212,13 @@ public class AirportMain {
 			AirportRegisterManager.airportRegister(airportList);
 			// 항공권리스트 출력 및 가져오기
 			AirportRegisterManager.airportList(airportList);
-			flag = true;
+			findFlag = true;
 		} else {
 			System.out.println("찾으시는 정보가 없습니다.");
 		}
 
 		// 항공권 예매하기
-		if (flag) {
+		if (findFlag) {
 			// 지불내역 데이터 넣기
 			PaymentVO pvo = PaymentRegisterManager.paymentRegister(airportDataList);
 			if (pvo != null) {
@@ -232,5 +232,4 @@ public class AirportMain {
 	public static void paymentTotalList() {
 		PaymentRegisterManager.paymentTotalList();
 	}
-
 }

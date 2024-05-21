@@ -60,9 +60,12 @@ public class AriportDAO {
 		try {
 			con = DBUtil.makeConnection();
 			pstmt = con.prepareStatement(sql);
-			System.out.println("-------------------------------------------------------------------------------------");
-			System.out.println(" 항공편ID | 항공편명 | 항공사명 | 출발공항 | 도착공항 | 출발시간 | 도착시간 | 일반석운임 | 비즈니스석운임 ");
-			System.out.println("-------------------------------------------------------------------------------------");
+			System.out
+					.println("--------------------------------------------------------------------------------------------------------------");
+			System.out.println(
+					" 항공편ID | 운항기ID | 출발공항 | 도착공항 |      출발시간      |      도착시간      |  항공사명   | 일반석운임 | 비즈니스석운임 ");
+			System.out
+					.println("--------------------------------------------------------------------------------------------------------------");
 			for (int i = 0; i < list.size(); i++) {
 				pstmt.setString(1, list.get(i).getVihicle_id());
 				pstmt.setString(2, list.get(i).getAirline_name());
@@ -78,15 +81,21 @@ public class AriportDAO {
 					avo.setAirline_name(rs.getString("airline_name"));
 					avo.setDepAirport_name(rs.getString("depAirport_name"));
 					avo.setArrAirport_name(rs.getString("arrAirport_name"));
-					avo.setDep_plandtime(String.valueOf(rs.getDate("dep_plandtime")));
-					avo.setArr_plandtime(String.valueOf(rs.getDate("arr_plandtime")));
+					avo.setDep_plandtime(rs.getString("dep_plandtime"));
+					avo.setArr_plandtime(rs.getString("arr_plandtime"));
 					avo.setEconomy_charge(rs.getInt("economy_charge"));
 					avo.setPrestige_charge(rs.getInt("prestige_charge"));
-					System.out.println(avo.toString());
 					airportDataList.add(avo);
+
+					System.out.printf("  %-4d  | %-6s |  %-3s  |  %-3s  | %s | %s | %-6s | %-7d | %-7d \n",
+							rs.getInt("airports_id"), rs.getString("vihicle_id"), rs.getString("depAirport_name"),
+							rs.getString("arrAirport_name"), rs.getString("dep_plandtime").substring(0, 16),
+							rs.getString("arr_plandtime").substring(0, 16), rs.getString("airline_name"), rs.getInt("economy_charge"),
+							rs.getInt("prestige_charge"));
 				}
 			}
-			System.out.println("-------------------------------------------------------------------------------------");
+			System.out
+					.println("--------------------------------------------------------------------------------------------------------------");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

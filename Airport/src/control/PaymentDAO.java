@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import model.PaymentVO;
 
 public class PaymentDAO {
@@ -63,20 +61,20 @@ public class PaymentDAO {
 			pstmt.setString(2, customer_phone);
 			rs = pstmt.executeQuery();
 			System.out.println(
-					"---------------------------------------------------------------------------------------------------");
-			System.out.println(" 항공편ID | 결제일 | 고객이름 | 항공사명 | 출발공항 | 도착공항 | 출발시간 | 도착시간 | 일반석 | 비즈니스석 | 총가격 ");
+					"------------------------------------------------------------------------------------------------------------------------");
 			System.out.println(
-					"---------------------------------------------------------------------------------------------------");
+					" 운항기ID |    결제일    | 고객이름 | 출발공항 | 도착공항 |      출발시간      |      도착시간      | 일반석 | 비즈니스석 |  항공사명  | 총가격 ");
+			System.out.println(
+					"------------------------------------------------------------------------------------------------------------------------");
 			while (rs.next()) {
-				System.out.println(" " + rs.getString("vihicle_id") + " | " + String.valueOf(rs.getDate("payment_date"))
-						+ " | " + rs.getString("customer_name") + " | " + rs.getString("airline_name") + " | "
-						+ rs.getString("depairport_name") + " | " + rs.getString("arrAirport_name") + " | "
-						+ rs.getString("dep_plandtime") + " | " + rs.getString("arr_plandtime") + " | "
-						+ rs.getInt("economy_count") + " | " + rs.getInt("prestige_count") + " | "
-						+ rs.getInt("total_price"));
+				System.out.printf(" %-6s | %s | %-5s |  %-3s  |  %-3s  | %s | %s | %-3d |  %-5d  | %-6s | %d \n",
+						rs.getString("vihicle_id"), String.valueOf(rs.getDate("payment_date")),
+						rs.getString("customer_name"), rs.getString("depairport_name"), rs.getString("arrAirport_name"),
+						rs.getString("dep_plandtime"), rs.getString("arr_plandtime"), rs.getInt("economy_count"),
+						rs.getInt("prestige_count"), rs.getString("airline_name"), rs.getInt("total_price"));
 			}
 			System.out.println(
-					"---------------------------------------------------------------------------------------------------");
+					"------------------------------------------------------------------------------------------------------------------------");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -111,20 +109,20 @@ public class PaymentDAO {
 			pstmt.setString(2, customer_phone);
 			rs = pstmt.executeQuery();
 			System.out.println(
-					"---------------------------------------------------------------------------------------------------");
-			System.out.println(" 항공편ID | 결제일 | 고객이름 | 항공사명 | 출발공항 | 도착공항 | 출발시간 | 도착시간 | 일반석 | 비즈니스석 | 총가격 ");
+					"------------------------------------------------------------------------------------------------------------------------");
 			System.out.println(
-					"---------------------------------------------------------------------------------------------------");
+					" 운항기ID |    결제일    | 고객이름 | 출발공항 | 도착공항 |      출발시간      |      도착시간      | 일반석 | 비즈니스석 |  항공사명  | 총가격 ");
+			System.out.println(
+					"------------------------------------------------------------------------------------------------------------------------");
 			while (rs.next()) {
-				System.out.println(" " + rs.getString("vihicle_id") + " | " + String.valueOf(rs.getDate("payment_date"))
-						+ " | " + rs.getString("customer_name") + " | " + rs.getString("airline_name") + " | "
-						+ rs.getString("depairport_name") + " | " + rs.getString("arrAirport_name") + " | "
-						+ rs.getString("dep_plandtime") + " | " + rs.getString("arr_plandtime") + " | "
-						+ rs.getInt("economy_count") + " | " + rs.getInt("prestige_count") + " | "
-						+ rs.getInt("total_price"));
+				System.out.printf(" %-6s | %s | %-5s |  %-3s  |  %-3s  | %s | %s | %-3d |  %-5d  | %-6s | %d \n",
+						rs.getString("vihicle_id"), String.valueOf(rs.getDate("payment_date")),
+						rs.getString("customer_name"), rs.getString("depairport_name"), rs.getString("arrAirport_name"),
+						rs.getString("dep_plandtime"), rs.getString("arr_plandtime"), rs.getInt("economy_count"),
+						rs.getInt("prestige_count"), rs.getString("airline_name"), rs.getInt("total_price"));
 			}
 			System.out.println(
-					"---------------------------------------------------------------------------------------------------");
+					"------------------------------------------------------------------------------------------------------------------------");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
