@@ -1,79 +1,76 @@
 package control;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.AirportVO;
+import oracle.jdbc.OracleTypes;
 
 public class AriportDAO {
 	// 항공권 정보 저장
 	public static void setAirportRegister(List<AirportVO> list) {
-		String sql = "INSERT INTO AIRPORTS VALUES(AIRPORTS_ID_SEQ.nextval,?,?,?,?,to_date(?,'YYYY-MM-DD HH24:MI'),to_date(?,'YYYY-MM-DD HH24:MI'),?,?)";
 		Connection con = null;
-		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 		try {
 			con = DBUtil.makeConnection();
-			pstmt = con.prepareStatement(sql);
+			cstmt = con.prepareCall("{CALL AIRPORTS_INSERT_PROC(?,?,?,?,?,?,?,?,?)}");
 
 			for (AirportVO avo : list) {
-				pstmt.setString(1, avo.getVihicle_id());
-				pstmt.setString(2, avo.getAirline_name());
-				pstmt.setString(3, avo.getDepAirport_name());
-				pstmt.setString(4, avo.getArrAirport_name());
-				pstmt.setString(5, avo.getDep_plandtime());
-				pstmt.setString(6, avo.getArr_plandtime());
-				pstmt.setInt(7, avo.getEconomy_charge());
-				pstmt.setInt(8, avo.getPrestige_charge());
-				int value = pstmt.executeUpdate();
-				if (value != 1) {
-					System.out.println(avo.getVihicle_id() + " 등록 실패");
+				cstmt.setString(1, avo.getVihicle_id());
+				cstmt.setString(2, avo.getAirline_name());
+				cstmt.setString(3, avo.getDepAirport_name());
+				cstmt.setString(4, avo.getArrAirport_name());
+				cstmt.setString(5, avo.getDep_plandtime());
+				cstmt.setString(6, avo.getArr_plandtime());
+				cstmt.setInt(7, avo.getEconomy_charge());
+				cstmt.setInt(8, avo.getPrestige_charge());
+				cstmt.registerOutParameter(9, Types.INTEGER);
+				cstmt.executeUpdate();
+				int value = cstmt.getInt(9);
+				if (value == 0) {
+					System.out.println("항공편 등록 성공");
+				}
+				if (value == 1) {
+					System.out.println("항공편 정보가 중복되어 등록하지 않았습니다.");
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DBUtil.closeResources(con, cstmt);
 		}
 	}
 
 	// 항공권 목록 가져오기
 	public static ArrayList<AirportVO> getAirportList(List<AirportVO> list) {
 		ArrayList<AirportVO> airportDataList = new ArrayList<>();
-		String sql = "SELECT * FROM AIRPORTS where vihicle_id=? and AIRLINE_NAME=? "
-				+ "and DEPAIRPORT_NAME=? and ARRAIRPORT_NAME=? and to_char(DEP_PLANDTIME,'YYYYMMDD')=?";
 		Connection con = null;
-		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 		ResultSet rs = null;
 		try {
 			con = DBUtil.makeConnection();
-			pstmt = con.prepareStatement(sql);
-			System.out
-					.println("--------------------------------------------------------------------------------------------------------------");
+			cstmt = con.prepareCall("CALL AIRPORTS_PRINT_PROC(?,?,?,?,?,?)");
+
+			System.out.println(
+					"--------------------------------------------------------------------------------------------------------------");
 			System.out.println(
 					" 항공편ID | 운항기ID | 출발공항 | 도착공항 |      출발시간      |      도착시간      |  항공사명   | 일반석운임 | 비즈니스석운임 ");
-			System.out
-					.println("--------------------------------------------------------------------------------------------------------------");
+			System.out.println(
+					"--------------------------------------------------------------------------------------------------------------");
 			for (int i = 0; i < list.size(); i++) {
-				pstmt.setString(1, list.get(i).getVihicle_id());
-				pstmt.setString(2, list.get(i).getAirline_name());
-				pstmt.setString(3, list.get(i).getDepAirport_name());
-				pstmt.setString(4, list.get(i).getArrAirport_name());
-				pstmt.setString(5, list.get(i).getDep_plandtime().substring(0, 8));
-				rs = pstmt.executeQuery();
-
+				cstmt.setString(1, list.get(i).getVihicle_id());
+				cstmt.setString(2, list.get(i).getAirline_name());
+				cstmt.setString(3, list.get(i).getDepAirport_name());
+				cstmt.setString(4, list.get(i).getArrAirport_name());
+				cstmt.setString(5, list.get(i).getDep_plandtime().substring(0, 8));
+				cstmt.registerOutParameter(6, OracleTypes.CURSOR);
+				cstmt.executeQuery();
+				rs = (ResultSet) cstmt.getObject(6);
 				while (rs.next()) {
 					AirportVO avo = new AirportVO();
 					avo.setAirports_id(rs.getInt("airports_id"));
@@ -90,28 +87,16 @@ public class AriportDAO {
 					System.out.printf("  %-4d  | %-6s |  %-3s  |  %-3s  | %s | %s | %-6s | %-7d | %-7d \n",
 							rs.getInt("airports_id"), rs.getString("vihicle_id"), rs.getString("depAirport_name"),
 							rs.getString("arrAirport_name"), rs.getString("dep_plandtime").substring(0, 16),
-							rs.getString("arr_plandtime").substring(0, 16), rs.getString("airline_name"), rs.getInt("economy_charge"),
-							rs.getInt("prestige_charge"));
+							rs.getString("arr_plandtime").substring(0, 16), rs.getString("airline_name"),
+							rs.getInt("economy_charge"), rs.getInt("prestige_charge"));
 				}
 			}
-			System.out
-					.println("--------------------------------------------------------------------------------------------------------------");
+			System.out.println(
+					"--------------------------------------------------------------------------------------------------------------");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DBUtil.closeResources(con, cstmt, rs);
 		}
 		return airportDataList;
 	}

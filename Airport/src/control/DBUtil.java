@@ -3,8 +3,10 @@ package control;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -39,5 +41,35 @@ public class DBUtil {
 			System.out.println("DB.PROPERTIES 연결 실패");
 		}
 		return con;
+	}
+
+	public static void closeResources(Connection con, CallableStatement cstmt) {
+		try {
+			if (cstmt != null) {
+				cstmt.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void closeResources(Connection con, CallableStatement cstmt, ResultSet rs) {
+		try {
+			if (rs != null) {
+				rs.close();
+			}
+			if (cstmt != null) {
+				cstmt.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

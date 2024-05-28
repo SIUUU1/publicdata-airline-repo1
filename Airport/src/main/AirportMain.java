@@ -29,7 +29,6 @@ public class AirportMain {
 				if (menuSelectNum < 1 || menuSelectNum > 3) {
 					System.out.println("1부터 3까지의 숫자를 입력해주세요");
 				} else {
-
 					switch (menuSelectNum) {
 					case MAINMENU_CHOICE.RESERVATION:
 						// 예매하기
@@ -210,7 +209,7 @@ public class AirportMain {
 		if (!airportList.isEmpty()) {
 			// 항공권 등록
 			AirportRegisterManager.airportRegister(airportList);
-			// 항공권리스트 출력 및 가져오기
+			// 항공권리스트 출력
 			AirportRegisterManager.airportList(airportList);
 			findFlag = true;
 		} else {

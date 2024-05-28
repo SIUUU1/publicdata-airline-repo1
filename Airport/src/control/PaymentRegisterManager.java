@@ -65,7 +65,7 @@ public class PaymentRegisterManager {
 		String customer_name = sc.nextLine();
 		System.out.print("전화번호>> ");
 		String customer_phone = sc.nextLine();
-		PaymentDAO.setPaymentRegister(customer_name, customer_phone);
+		PaymentDAO.getPaymentList(customer_name, customer_phone);
 	}
 
 }

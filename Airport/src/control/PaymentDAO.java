@@ -1,30 +1,34 @@
 package control;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+
 import model.PaymentVO;
+import oracle.jdbc.OracleTypes;
 
 public class PaymentDAO {
 	// 결제 정보 저장
 	public static void setPaymentRegister(PaymentVO pvo) {
-		String sql = "INSERT INTO PAYMENTS VALUES(PAYMENTS_ID_SEQ.nextval, ?, ?, SYSDATE, ?, ?, ?, ?, ?, ?)";
 		Connection con = null;
-		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 		try {
 			con = DBUtil.makeConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, pvo.getAirports_id());
-			pstmt.setString(2, pvo.getVihicle_id());
-			pstmt.setString(3, pvo.getCustomer_name());
-			pstmt.setString(4, pvo.getCustomer_phone());
-			pstmt.setString(5, pvo.getCustomer_email());
-			pstmt.setInt(6, pvo.getEconomy_count());
-			pstmt.setInt(7, pvo.getPrestige_count());
-			pstmt.setInt(8, pvo.getTotal_price());
-			int value = pstmt.executeUpdate();
-			if (value == 1) {
+			cstmt = con.prepareCall("{CALL PAY_INSERT_PROC(?,?,?,?,?,?,?,?,?)}");
+			cstmt.setInt(1, pvo.getAirports_id());
+			cstmt.setString(2, pvo.getVihicle_id());
+			cstmt.setString(3, pvo.getCustomer_name());
+			cstmt.setString(4, pvo.getCustomer_phone());
+			cstmt.setString(5, pvo.getCustomer_email());
+			cstmt.setInt(6, pvo.getEconomy_count());
+			cstmt.setInt(7, pvo.getPrestige_count());
+			cstmt.setInt(8, pvo.getTotal_price());
+			cstmt.registerOutParameter(9, Types.INTEGER);
+			cstmt.executeUpdate();
+			int value = cstmt.getInt(9);
+			if (value == 0) {
 				System.out.println(pvo.getCustomer_name() + " 결제내역 등록 성공");
 			} else {
 				System.out.println(pvo.getCustomer_name() + " 결제내역 등록 실패");
@@ -33,33 +37,22 @@ public class PaymentDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DBUtil.closeResources(con, cstmt);
 		}
 	}
 
 	public static void getPaymentList(String customer_phone, int airports_id) {
-		String sql = "SELECT P.vihicle_id, to_char(p.payment_date,'YYYY-MM-DD') payment_date , p.customer_name, a.airline_name, a.depairport_name, a.arrairport_name, "
-				+ "to_char(a.dep_plandtime,'YYYY-MM-DD HH24:MI') dep_plandtime, to_char(a.arr_plandtime,'YYYY-MM-DD HH24:MI') arr_plandtime, p.economy_count, p.prestige_count, p.total_price "
-				+ "FROM PAYMENTS P INNER JOIN AIRPORTS A ON P.AIRPORTS_ID = A.AIRPORTS_ID "
-				+ "WHERE p.AIRPORTS_ID =? AND p.customer_phone=? ORDER BY P.payment_date DESC";
 		Connection con = null;
-		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 		ResultSet rs = null;
 		try {
 			con = DBUtil.makeConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, airports_id);
-			pstmt.setString(2, customer_phone);
-			rs = pstmt.executeQuery();
+			cstmt = con.prepareCall("{CALL PAYMENTS_PRINT_PROC1(?,?,?)}");
+			cstmt.setInt(1, airports_id);
+			cstmt.setString(2, customer_phone);
+			cstmt.registerOutParameter(3, OracleTypes.CURSOR);
+			cstmt.executeQuery();
+			rs = (ResultSet) cstmt.getObject(3);
 			System.out.println(
 					"------------------------------------------------------------------------------------------------------------------------");
 			System.out.println(
@@ -78,36 +71,22 @@ public class PaymentDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DBUtil.closeResources(con, cstmt, rs);
 		}
 	}
 
-	public static void setPaymentRegister(String customer_name, String customer_phone) {
-		String sql = "SELECT P.vihicle_id, to_char(p.payment_date,'YYYY-MM-DD') payment_date , p.customer_name, a.airline_name, a.depairport_name, a.arrairport_name, "
-				+ "to_char(a.dep_plandtime,'YYYY-MM-DD HH24:MI') dep_plandtime, to_char(a.arr_plandtime,'YYYY-MM-DD HH24:MI') arr_plandtime, p.economy_count, p.prestige_count, p.total_price "
-				+ "FROM PAYMENTS P INNER JOIN AIRPORTS A ON P.AIRPORTS_ID = A.AIRPORTS_ID "
-				+ "WHERE p.customer_name =? AND p.customer_phone=? ORDER BY P.payment_date DESC";
+	public static void getPaymentList(String customer_name, String customer_phone) {
 		Connection con = null;
-		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 		ResultSet rs = null;
 		try {
 			con = DBUtil.makeConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, customer_name);
-			pstmt.setString(2, customer_phone);
-			rs = pstmt.executeQuery();
+			cstmt = con.prepareCall("{CALL PAYMENTS_PRINT_PROC2(?,?,?)}");
+			cstmt.setString(1, customer_name);
+			cstmt.setString(2, customer_phone);
+			cstmt.registerOutParameter(3, OracleTypes.CURSOR);
+			cstmt.executeQuery();
+			rs = (ResultSet) cstmt.getObject(3);
 			System.out.println(
 					"------------------------------------------------------------------------------------------------------------------------");
 			System.out.println(
@@ -126,19 +105,7 @@ public class PaymentDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DBUtil.closeResources(con, cstmt, rs);
 		}
 	}
 
