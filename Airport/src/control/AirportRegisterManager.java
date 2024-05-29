@@ -28,7 +28,7 @@ import main.AirportMain;
 import model.AirportVO;
 
 public class AirportRegisterManager {
-	// 항공권 정보 저장
+	// 항공권 정보 저장하기
 	public static void airportRegister(List<AirportVO> list) {
 		AriportDAO.setAirportRegister(list);
 	}
@@ -38,17 +38,20 @@ public class AirportRegisterManager {
 		AirportMain.airportDataList = AriportDAO.getAirportList(list);
 	}
 
-	// 항공권 검색함수
+	// 항공권 검색하기
 	public static List<AirportVO> selectAirport(String depAirportId, String arrAirportId, String depPlandTime,
 			String airlineId) {
 		List<AirportVO> list = new ArrayList<>();
 		//properties 가져오기
 		String filePath = "/Users/ansiu/publicdata-airline-repo1/Airport/src/db.properties";
 		String serviceKey = null;
+		String requestURL = null;
+		
 		try {
 			Properties properties = new Properties();
 			properties.load(new FileReader(filePath));
 			serviceKey = properties.getProperty("serviceKey");
+			requestURL = properties.getProperty("requestURL");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -56,8 +59,7 @@ public class AirportRegisterManager {
 		}
 		
 		// 1.요청 url 생성
-		StringBuilder urlBuilder = new StringBuilder(
-				"http://apis.data.go.kr/1613000/DmstcFlightNvgInfoService/getFlightOpratInfoList"); /* URL */
+		StringBuilder urlBuilder = new StringBuilder(requestURL); /* URL */
 		try {
 			urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8")
 					+ serviceKey);

@@ -27,7 +27,7 @@ public class AirportMain {
 			} else {
 				int menuSelectNum = Integer.parseInt(menuSelect);
 				if (menuSelectNum < 1 || menuSelectNum > 3) {
-					System.out.println("1부터 3까지의 숫자를 입력해주세요");
+					System.out.println("1부터 3까지의 숫자를 입력해주세요.");
 				} else {
 					switch (menuSelectNum) {
 					case MAINMENU_CHOICE.RESERVATION:
@@ -39,6 +39,7 @@ public class AirportMain {
 						paymentTotalList();
 						break;
 					case MAINMENU_CHOICE.QUIT:
+						//종료
 						System.out.println("종료합니다.");
 						exitFlag = true;
 						break;
@@ -107,6 +108,9 @@ public class AirportMain {
 		case AIRPORT_CHOICE.NAARKTU:
 			depAirportId = "NAARKTU";
 			break;
+		default : 
+			System.out.println("1부터 15까지의 숫자를 입력해주세요.");
+			break;
 		}
 
 		// 도착공항
@@ -160,6 +164,9 @@ public class AirportMain {
 		case AIRPORT_CHOICE.NAARKTU:
 			arrAirportId = "NAARKTU";
 			break;
+		default : 
+			System.out.println("1부터 15까지의 숫자를 입력해주세요.");
+			break;
 		}
 
 		// 출발일
@@ -201,6 +208,9 @@ public class AirportMain {
 			break;
 		case AIRLINE_CHOICE.TWB:
 			airlineId = "TWB";
+			break;
+		default : 
+			System.out.println("1부터 10까지의 숫자를 입력해주세요.");
 			break;
 		}
 
